@@ -11,7 +11,7 @@ const showRandomQuote = () => {
     if (quotes.length === 1) {
         quote = quotes[0];
     } else {
-        const randIndex = Math.floor(Math.random() * (quotes.length - 1));
+        const randIndex = Math.floor(Math.random() * (quotes.length));
 
         quote = quotes[randIndex];
     }
@@ -24,6 +24,10 @@ const createAddQuoteForm = (text, category) => {
         text,
         category
     });
+
+    const quoteParagraph = document.createElement('p');
+    quoteParagraph.textContent = `${text} - ${category}`
+    quoteDisplay.appendChild(quoteParagraph)
 }
 
 newQuoteBtn.addEventListener('click', showRandomQuote);

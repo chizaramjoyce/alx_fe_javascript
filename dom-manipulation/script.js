@@ -116,7 +116,7 @@ async function fetchQuotesFromServer() {
         }
     });
 
-    info.textContent = `Data updated from server, last updated ${new Date()}`;
+    info.textContent = `Quotes synced with server! Last updated ${new Date()}`;
 
     filterQuotes();
 }

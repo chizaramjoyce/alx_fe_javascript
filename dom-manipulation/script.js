@@ -2,6 +2,7 @@ const quoteDisplay = document.getElementById('quoteDisplay');
 const newQuoteBtn = document.getElementById('newQuote');
 const exportBtn = document.getElementById('export');
 const categoryFilter = document.getElementById('categoryFilter');
+const info = document.getElementById('info');
 
 const quotes = JSON.parse(localStorage.getItem('quotes') || '[]');
 const lastCategory = localStorage.getItem('last-category') || 'all';
@@ -41,7 +42,7 @@ const createAddQuoteForm = (text, category, save = false) => {
     addQuoteToDisplay(text, category);
 }
 
-function addQuote() {
+async function addQuote() {
     const newQuoteText = document.getElementById('newQuoteText');
     const newQuoteCategory = document.getElementById('newQuoteCategory');
 
@@ -49,6 +50,15 @@ function addQuote() {
     const category = newQuoteCategory.value;
 
     createAddQuoteForm(text, category, true);
+
+    await fetch('https://jsonplaceholder.typicode.com/posts', {
+        method: 'POST',
+        body: JSON.stringify({
+            title: category,
+            body: text,
+            userId: 1
+        })
+    });
 
     newQuoteText.value = '';
     newQuoteCategory.value = '';
@@ -93,6 +103,21 @@ function filterQuotes() {
     localStorage.setItem('last-category', selectedCategory);
 }
 
+async function fetchQuotesFromServer() {
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+    const result = await response.json();
+
+    result.forEach(({ title, body }) => {
+        if (!quotes.find(({ text, category }) => text === body && category === title)) {
+            createAddQuoteForm(body, title, true);
+        }
+    });
+
+    info.textContent = `Data updated from server, last updated ${new Date()}`;
+
+    filterQuotes();
+}
+
 populateCategories();
 
 categoryFilter.value = lastCategory;
@@ -102,6 +127,12 @@ quotes.forEach((quote) => {
 });
 
 filterQuotes();
+
+fetchQuotesFromServer();
+
+setInterval(() => {
+    fetchQuotesFromServer();
+}, 60000);
 
 newQuoteBtn.addEventListener('click', showRandomQuote);
 

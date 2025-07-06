@@ -80,9 +80,9 @@ function populateCategories() {
 }
 
 function filterQuotes() {
-    const filterValue = categoryFilter.value;
+    const selectedCategory = categoryFilter.value;
 
-    const filteredQuotes = filterValue === 'all' ? quotes : quotes.filter(({ category }) => category === filterValue);
+    const filteredQuotes = selectedCategory === 'all' ? quotes : quotes.filter(({ category }) => category === selectedCategory);
 
     quoteDisplay.innerHTML = '';
 
@@ -90,7 +90,7 @@ function filterQuotes() {
         addQuoteToDisplay(text, category);
     });
 
-    localStorage.setItem('last-category', filterValue);
+    localStorage.setItem('last-category', selectedCategory);
 }
 
 populateCategories();

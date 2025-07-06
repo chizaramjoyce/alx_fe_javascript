@@ -121,6 +121,12 @@ async function fetchQuotesFromServer() {
     filterQuotes();
 }
 
+function syncQuotes() {
+    setInterval(() => {
+        fetchQuotesFromServer();
+    }, 60000);
+}
+
 populateCategories();
 
 categoryFilter.value = lastCategory;
@@ -133,9 +139,7 @@ filterQuotes();
 
 fetchQuotesFromServer();
 
-setInterval(() => {
-    fetchQuotesFromServer();
-}, 60000);
+syncQuotes();
 
 newQuoteBtn.addEventListener('click', showRandomQuote);
 

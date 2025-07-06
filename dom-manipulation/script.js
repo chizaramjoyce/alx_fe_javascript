@@ -1,8 +1,10 @@
 const quoteDisplay = document.getElementById('quoteDisplay');
 const newQuoteBtn = document.getElementById('newQuote');
 const exportBtn = document.getElementById('export');
+const categoryFilter = document.getElementById('categoryFilter');
 
 const quotes = JSON.parse(localStorage.getItem('quotes') || '[]');
+const lastCategory = localStorage.getItem('last-category') || 'all';
 
 const showRandomQuote = () => {
     let quote;
@@ -20,6 +22,12 @@ const showRandomQuote = () => {
     quoteDisplay.innerHTML = `<p>${quote.text} - ${quote.category}</p>`;
 };
 
+const addQuoteToDisplay = (text, category) => {
+    const quoteParagraph = document.createElement('p');
+    quoteParagraph.textContent = `${text} - ${category}`;
+    quoteDisplay.appendChild(quoteParagraph);
+}
+
 const createAddQuoteForm = (text, category, save = false) => {
     quotes.push({
         text,
@@ -30,9 +38,7 @@ const createAddQuoteForm = (text, category, save = false) => {
         localStorage.setItem('quotes', JSON.stringify(quotes));
     }
 
-    const quoteParagraph = document.createElement('p');
-    quoteParagraph.textContent = `${text} - ${category}`
-    quoteDisplay.appendChild(quoteParagraph)
+    addQuoteToDisplay(text, category);
 }
 
 function addQuote() {
@@ -62,9 +68,40 @@ function importFromJsonFile(event) {
     fileReader.readAsText(event.target.files[0]);
 }
 
+function populateCategories() {
+    const quoteCategories = Array.from(new Set(quotes.map(({ category }) => category)));
+
+    quoteCategories.forEach(category => {
+        const categoryOption = document.createElement('option');
+        categoryOption.value = category;
+        categoryOption.innerText = category;
+        categoryFilter.appendChild(categoryOption)
+    });
+}
+
+function filterQuotes() {
+    const filterValue = categoryFilter.value;
+
+    const filteredQuotes = filterValue === 'all' ? quotes : quotes.filter(({ category }) => category === filterValue);
+
+    quoteDisplay.innerHTML = '';
+
+    filteredQuotes.forEach(({ text, category }) => {
+        addQuoteToDisplay(text, category);
+    });
+
+    localStorage.setItem('last-category', filterValue);
+}
+
+populateCategories();
+
+categoryFilter.value = lastCategory;
+
 quotes.forEach((quote) => {
-    createAddQuoteForm(quote.text, quote.category);
+    addQuoteToDisplay(quote.text, quote.category);
 });
+
+filterQuotes();
 
 newQuoteBtn.addEventListener('click', showRandomQuote);
 
